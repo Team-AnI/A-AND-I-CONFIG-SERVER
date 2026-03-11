@@ -1,0 +1,11 @@
+services:
+  config-server:
+    build:
+      context: .
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      CONFIG_SERVER_USERNAME: config-user
+      CONFIG_SERVER_PASSWORD: change-this-before-deploy
+      SERVER_PORT: 8888
+    ports:
+      - "8888:8888"

@@ -1,0 +1,2 @@
+jwt:
+  issuer: http://localhost:8080
