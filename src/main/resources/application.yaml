@@ -17,20 +17,6 @@ spring:
     config:
       server:
         accept-empty: false
-        overrides:
-          management.endpoints.web.exposure.include: health,info
-        git:
-          uri: ${CONFIG_GIT_URI:https://github.com/Team-AnI/A-AND-I-CONFIG-REPOSITORY}
-          default-label: ${CONFIG_GIT_DEFAULT_LABEL:main}
-          clone-on-start: ${CONFIG_GIT_CLONE_ON_START:true}
-          timeout: ${CONFIG_GIT_TIMEOUT:5}
-          order: 2
-        aws-secretsmanager:
-          region: ${AWS_REGION:ap-northeast-2}
-          prefix: ${CONFIG_AWS_SECRETS_PREFIX:/a-and-i}
-          profile-separator: _
-          ignore-label: true
-          order: 1
 
 server:
   port: ${SERVER_PORT:8888}

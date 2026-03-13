@@ -1,2 +1,2 @@
 gateway:
-  internal-token: local-dev-token
+  internal-token: fake-gateway-internal-token

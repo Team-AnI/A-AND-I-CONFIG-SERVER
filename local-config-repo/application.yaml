@@ -1,2 +1,4 @@
 common:
-  message: hello from config server
+  message: hello from local config server sample
+platform:
+  phase: phase1-local-sample

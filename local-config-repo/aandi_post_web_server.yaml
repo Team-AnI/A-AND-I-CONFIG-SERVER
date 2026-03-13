@@ -1,0 +1,3 @@
+frontend:
+  api-base-url: https://post-web.local.example.test
+  asset-version: phase1-local-sample

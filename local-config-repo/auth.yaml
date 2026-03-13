@@ -1,2 +1,2 @@
 jwt:
-  issuer: http://localhost:8080
+  issuer: https://auth.local.example.test
