@@ -1,2 +1,396 @@
-gateway:
-  internal-token: fake-gateway-internal-token
+spring:
+  codec:
+    max-in-memory-size: 2MB
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            add-to-simple-url-handler-mapping: true
+            cors-configurations:
+              "[/**]":
+                allowed-origin-patterns: https://*,http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowed-headers: "*"
+                exposed-headers:
+                  - X-Auth-Context-Cache
+                allow-credentials: false
+                max-age: 3600
+          default-filters:
+            - RequestSize=2MB
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+          routes:
+            - id: auth-service-v1-login
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/auth/login
+                - Method=POST
+            - id: auth-service-v1-refresh
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/auth/refresh
+                - Method=POST
+            - id: auth-service-v1-logout
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/auth/logout
+                - Method=POST
+            - id: auth-service-v1-me
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/me
+                - Method=GET
+            - id: auth-service-v1-me-post
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/me
+                - Method=POST
+            - id: auth-service-v1-me-patch
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/me
+                - Method=PATCH
+            - id: auth-service-v1-me-password
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/me/password
+                - Method=POST
+            - id: auth-service-v1-admin-ping
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/admin/ping
+                - Method=GET
+            - id: auth-service-v1-admin-users-get
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/admin/users
+                - Method=GET
+            - id: auth-service-v1-admin-users-post
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/admin/users
+                - Method=POST
+            - id: auth-service-v1-admin-invite-mail-post
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/admin/invite-mail
+                - Method=POST
+            - id: auth-service-v1-admin-users-role-patch
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/admin/users/role
+                - Method=PATCH
+            - id: auth-service-v1-admin-users-reset-password
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/admin/users/*/reset-password
+                - Method=POST
+            - id: auth-service-v1-admin-users-delete
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v1/admin/users/**
+                - Method=DELETE
+            - id: auth-service-login
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/login
+                - Method=POST
+              filters:
+                - SetPath=/v1/auth/login
+            - id: auth-service-refresh
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/refresh
+                - Method=POST
+              filters:
+                - SetPath=/v1/auth/refresh
+            - id: auth-service-logout
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/logout
+                - Method=POST
+              filters:
+                - SetPath=/v1/auth/logout
+            - id: auth-service-activate
+              uri: http://localhost:9000
+              predicates:
+                - Path=/activate
+                - Method=POST
+            - id: auth-service-me
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/me
+                - Method=GET
+              filters:
+                - SetPath=/v1/me
+            - id: auth-service-admin-ping
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/admin/ping
+                - Method=GET
+              filters:
+                - SetPath=/v1/admin/ping
+            - id: auth-service-admin-users-get
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/admin/users
+                - Method=GET
+              filters:
+                - SetPath=/v1/admin/users
+            - id: auth-service-admin-users-post
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/admin/users
+                - Method=POST
+              filters:
+                - SetPath=/v1/admin/users
+            - id: auth-service-admin-invite-mail-post
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/admin/invite-mail
+                - Method=POST
+              filters:
+                - SetPath=/v1/admin/invite-mail
+            - id: auth-service-admin-users-role-patch
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/admin/users/role
+                - Method=PATCH
+              filters:
+                - SetPath=/v1/admin/users/role
+            - id: auth-service-admin-users-delete-root
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/admin/users
+                - Method=DELETE
+              filters:
+                - SetPath=/v1/admin/users
+            - id: auth-service-admin-users-delete
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/admin/users/**
+                - Method=DELETE
+              filters:
+                - RewritePath=/v2/auth/admin/users/(?<segment>.*), /v1/admin/users/$\{segment}
+            - id: report-service-root
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v2/report
+              filters:
+                - SetPath=/api/report
+            - id: report-service-subpaths
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v2/report/**
+              filters:
+                - StripPrefix=2
+            - id: report-service-v1-root
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v1/report
+              filters:
+                - SetPath=/api/report
+            - id: report-service-v1-subpaths
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v1/report/**
+              filters:
+                - RewritePath=/v1/report/(?<segment>.*), /api/report/$\{segment}
+            - id: report-service-v1-admin-courses-root-get
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v1/admin/courses
+                - Method=GET
+            - id: report-service-v1-admin-courses-root-post
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v1/admin/courses
+                - Method=POST
+            - id: report-service-v1-admin-courses-subpaths
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v1/admin/courses/**
+            - id: report-service-v1-courses-root
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v1/courses
+            - id: report-service-v1-courses-subpaths
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v1/courses/**
+            - id: post-service-v1-posts-images
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v1/posts/images
+                - Method=POST
+            - id: post-service-v1-posts-root-get
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v1/posts
+                - Method=GET
+            - id: post-service-v1-posts-root-post
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v1/posts
+                - Method=POST
+            - id: post-service-v1-posts-drafts
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v1/posts/drafts
+                - Method=GET
+            - id: post-service-v1-posts-subpaths-get
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v1/posts/**
+                - Method=GET
+            - id: post-service-v1-posts-subpaths-patch
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v1/posts/**
+                - Method=PATCH
+            - id: post-service-v1-posts-subpaths-delete
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v1/posts/**
+                - Method=DELETE
+            - id: post-service-openapi-root
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v2/post/v3/api-docs
+              filters:
+                - SetPath=/v3/api-docs
+            - id: post-service-openapi-subpaths
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v2/post/v3/api-docs/**
+              filters:
+                - RewritePath=/v2/post/v3/api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
+            - id: report-service-openapi-root
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v2/report/v3/api-docs
+              filters:
+                - SetPath=/v3/api-docs
+            - id: report-service-openapi-subpaths
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v2/report/v3/api-docs/**
+              filters:
+                - RewritePath=/v2/report/v3/api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
+            - id: auth-service-openapi-root
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/v3/api-docs
+              filters:
+                - SetPath=/v3/api-docs
+            - id: auth-service-openapi-subpaths
+              uri: http://localhost:9000
+              predicates:
+                - Path=/v2/auth/v3/api-docs/**
+              filters:
+                - RewritePath=/v2/auth/v3/api-docs/(?<segment>.*), /v3/api-docs/$\{segment}
+            - id: post-service-images-root
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v2/post/images
+              filters:
+                - SetPath=/v1/posts/images
+            - id: post-service-images-subpaths
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v2/post/images/**
+              filters:
+                - RewritePath=/v2/post/images/(?<segment>.*), /v1/posts/images/$\{segment}
+            - id: post-service-posts-root
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v2/post
+              filters:
+                - SetPath=/v1/posts
+            - id: report-service-admin-courses-root
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v2/post/admin/courses
+              filters:
+                - SetPath=/v1/admin/courses
+            - id: report-service-admin-courses-subpaths
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v2/post/admin/courses/**
+              filters:
+                - RewritePath=/v2/post/admin/courses/(?<segment>.*), /v1/admin/courses/$\{segment}
+            - id: report-service-courses-root
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v2/post/courses
+              filters:
+                - SetPath=/v1/courses
+            - id: report-service-courses-subpaths
+              uri: http://localhost:8081
+              predicates:
+                - Path=/v2/post/courses/**
+              filters:
+                - RewritePath=/v2/post/courses/(?<segment>.*), /v1/courses/$\{segment}
+            - id: post-service-posts-subpaths
+              uri: http://localhost:8084
+              predicates:
+                - Path=/v2/post/**
+              filters:
+                - RewritePath=/v2/post/(?<segment>.*), /v1/posts/$\{segment}
+          httpclient:
+            connect-timeout: 3000
+            response-timeout: 10s
+
+security:
+  jwt:
+    issuer: http://localhost:9000
+    audience: aandiclub-api
+    clock-skew-seconds: 30
+
+springdoc:
+  swagger-ui:
+    path: /
+    urls:
+      - name: report-service
+        url: /v2/report/v3/api-docs
+      - name: auth-service
+        url: /v2/auth/v3/api-docs
+      - name: post-service
+        url: /v2/post/v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    io.lettuce.core: WARN
+
+app:
+  security:
+    policy:
+      enforce-https: false
+      enforce-method-path-allowlist: true
+      enforce-json-content-type: true
+      allow-private-ip-host: true
+      prevalidate-refresh-token-type: true
+      allowed-hosts: localhost,127.0.0.1,api.aandiclub.com
+    rate-limit:
+      enabled: true
+      login-per-minute: 10
+      refresh-per-minute: 30
+      logout-per-minute: 30
+  token-cache:
+    ttl: 24h

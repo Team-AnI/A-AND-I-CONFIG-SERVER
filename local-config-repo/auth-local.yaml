@@ -1,0 +1,37 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/auth
+    username: auth
+    password: auth
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ""
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/auth
+    user: auth
+    password: auth
+    locations: classpath:db/migration
+
+security:
+  jwt:
+    secret: replace-me-local-auth-jwt-secret-32bytes
+
+app:
+  bootstrap-admin:
+    password: replace-me-local-admin-password
+  invite-mail:
+    from: no-reply@local.example.test

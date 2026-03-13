@@ -32,20 +32,35 @@ class ConfigServerApplicationTests(
 
 	@Test
 	fun `config lookup requires authentication`() {
-		mockMvc.perform(get("/auth/default"))
+		mockMvc.perform(get("/auth/local"))
 			.andExpect(status().isUnauthorized)
 	}
 
 	@Test
-	fun `config lookup works with authentication`() {
+	fun `auth local config lookup works with authentication`() {
 		mockMvc.perform(
-			get("/auth/default")
+			get("/auth/local")
 				.with(httpBasic("config-user", "change-this-before-deploy")),
 		)
 			.andExpect(status().isOk)
 			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 			.andExpect(content().string(containsString("\"name\":\"auth\"")))
-			.andExpect(content().string(containsString("\"jwt.issuer\":\"https://auth.local.example.test\"")))
-			.andExpect(content().string(containsString("\"common.message\":\"hello from local config server sample\"")))
+			.andExpect(content().string(containsString("\"profiles\":[\"local\"]")))
+			.andExpect(content().string(containsString("\"security.jwt.issuer\":\"https://auth.aandiclub.local.test\"")))
+			.andExpect(content().string(containsString("\"spring.r2dbc.url\":\"r2dbc:postgresql://localhost:5432/auth\"")))
+			.andExpect(content().string(containsString("\"aandi.platform.config-source\":\"native-config-server\"")))
+	}
+
+	@Test
+	fun `tech blog local config lookup supports dotted application names`() {
+		mockMvc.perform(
+			get("/tech.blog/local")
+				.with(httpBasic("config-user", "change-this-before-deploy")),
+		)
+			.andExpect(status().isOk)
+			.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+			.andExpect(content().string(containsString("\"name\":\"tech.blog\"")))
+			.andExpect(content().string(containsString("\"spring.r2dbc.url\":\"r2dbc:postgresql://localhost:5432/tech_blog\"")))
+			.andExpect(content().string(containsString("\"app.s3.bucket\":\"tech-blog-local-sample\"")))
 	}
 }

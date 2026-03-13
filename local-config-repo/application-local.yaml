@@ -1,0 +1,6 @@
+aandi:
+  platform:
+    environment: local
+    public-web-url: http://localhost:3000
+    api-url: http://localhost:8080
+    auth-url: http://localhost:9000

@@ -1,2 +1,64 @@
-jwt:
-  issuer: https://auth.local.example.test
+server:
+  forward-headers-strategy: framework
+
+security:
+  jwt:
+    issuer: https://auth.aandiclub.local.test
+    audience: aandiclub-api
+    access-token-exp-seconds: 3600
+    refresh-token-exp-seconds: 5184000
+    clock-skew-seconds: 30
+
+app:
+  openapi:
+    server-url: http://localhost:9000
+  cors:
+    allowed-origins: http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173,https://aandiclub.com,https://admin.aandiclub.com,https://auth.aandiclub.com,https://api.aandiclub.com
+    allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: Authorization,Content-Type,Accept,Origin,X-Requested-With
+    exposed-headers: ""
+    allow-credentials: true
+    max-age-seconds: 3600
+  bootstrap-admin:
+    enabled: true
+    username: admin
+  invite:
+    activation-base-url: https://aandiclub.com/activate
+    expiration-hours: 72
+  schema-guard:
+    enabled: true
+  invite-mail:
+    subject: A&I onboarding invite
+    from-name: A&I Platform Team
+  profile:
+    allowed-image-hosts: localhost,cdn.local.example.test
+  profile-image:
+    enabled: false
+    bucket: fake-profile-bucket
+    region: ap-northeast-2
+    key-prefix: profiles
+    public-base-url: ""
+    upload-url-expiration-seconds: 600
+    max-upload-bytes: 5242880
+    allowed-content-types: image/jpeg,image/png,image/webp
+  user-profile-event:
+    enabled: false
+    topic-arn: ""
+    region: ap-northeast-2
+    fifo-message-group-id: user-profile-updated
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: never

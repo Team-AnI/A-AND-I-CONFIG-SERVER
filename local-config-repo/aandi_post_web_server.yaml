@@ -1,3 +1,28 @@
-frontend:
-  api-base-url: https://post-web.local.example.test
-  asset-version: phase1-local-sample
+spring:
+  jackson:
+    time-zone: Asia/Seoul
+
+swagger:
+  server:
+    url: http://localhost:8080
+
+security:
+  jwt:
+    issuer: http://localhost:9000
+    audience: aandiclub-api
+    clock-skew-seconds: 30
+
+app:
+  cors:
+    allowed-origin-patterns: https://aandiclub.com,https://api.aandiclub.com,http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173
+    allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: Authorization,Content-Type,Accept,Origin,X-Requested-With
+    exposed-headers: ""
+    allow-credentials: false
+    max-age-seconds: 3600
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html

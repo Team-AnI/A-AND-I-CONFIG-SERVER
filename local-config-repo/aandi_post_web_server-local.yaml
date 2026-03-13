@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/aandi
+
+security:
+  jwt:
+    secret: replace-me-local-web-jwt-secret-32bytes

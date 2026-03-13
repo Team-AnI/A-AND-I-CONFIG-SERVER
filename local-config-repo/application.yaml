@@ -1,4 +1,15 @@
-common:
-  message: hello from local config server sample
-platform:
-  phase: phase1-local-sample
+aandi:
+  platform:
+    name: A&I
+    environment: local
+    config-source: native-config-server
+    public-web-url: http://localhost:3000
+    api-url: http://localhost:8080
+    auth-url: http://localhost:9000
+  config-server:
+    phase: phase1
+    aligned-services:
+      - auth
+      - gateway
+      - aandi_post_web_server
+      - tech.blog
